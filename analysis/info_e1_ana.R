@@ -1,6 +1,6 @@
 rm(list=ls())
 library(directlabels)
-source("useful.R")
+source("analysis/useful.R")
 
 clean <- function(x) {
   x <- as.numeric(gsub("[^0-9\\.]","",as.character(x)))

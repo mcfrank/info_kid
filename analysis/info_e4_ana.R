@@ -1,11 +1,11 @@
 rm(list=ls())
-source("~/Projects/R/Ranalysis/useful.R")
+source("analysis/useful.R")
 
-d1 <- read.csv("~/Projects/R/info_nouns/data/INFO_REP.csv")
+d1 <- read.csv("data/info_e4_rep_data.csv")
 d1$expt <- "replication"
-d2 <- read.csv("~/Projects/R/info_nouns/data/INFO_DISAMBIG.csv")
+d2 <- read.csv("data/info_e4_disambig_data.csv")
 d2$expt <- "disambiguation"
-d3 <- read.csv("~/Projects/R/info_nouns/data/INFO_NOWORD.csv")
+d3 <- read.csv("data/info_e4_salience_data.csv")
 d3$expt <- "salience"
 
 d <- rbind(d1,d2,d3)
@@ -19,11 +19,13 @@ md <- melt(d, id.vars=c("SID","age","expt"),
 md$trial <- as.numeric(str_sub(md$variable,2,2))
 md$trial.type <- c("filler","inference")[as.numeric(grepl("inference",md$variable))+1]
 
-# reverse 
+# reverse disambiguation responses 
+# the disambiguation "inference" trials are coded as correct when 
+md$correct[md$expt=="disambiguation" & md$trial.type=="inference"] <- 1 - md$correct[md$expt=="disambiguation" & md$trial.type=="inference"]
 
 mss <- aggregate(correct ~ trial.type + expt + age + SID,
                  md, mean)
-mss$age_group <- floor(mss$age)
+mss$age_group <- factor(floor(mss$age))
 
 ms <- ddply(mss, .(trial.type,expt,age_group), 
             summarise,          
@@ -31,9 +33,11 @@ ms <- ddply(mss, .(trial.type,expt,age_group),
             cih = ci.high(correct),
             correct = mean(correct))
 
+quartz()
 qplot(age_group, correct, fill = trial.type,
       stat="identity",
       position=position_dodge(.9),
       ymin=correct-cil, ymax=correct+cih,
-      data=ms, facets = .~expt, geom=c("bar","linerange")) + 
-  geom_hline(yintercept=.5,lty=2)
+      data=ms, facets = .~expt, geom=c("bar","linerange"),
+      xlab="Age Group (Years)",ylab="Proportion Inference Consistent") + 
+  geom_hline(yintercept=.5,lty=2) 

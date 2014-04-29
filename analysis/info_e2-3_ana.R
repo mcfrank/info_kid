@@ -1,5 +1,5 @@
 rm(list=ls())
-source("useful.R")
+source("analysis/useful.R")
 
 d1 <- read.csv("data/info_e2_data.csv")
 d1$expt <- "Experiment 2"
