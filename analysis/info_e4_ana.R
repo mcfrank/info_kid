@@ -52,8 +52,9 @@ qplot(age_group, correct, fill = trial.type,
 
 md$age_group <- factor(floor(md$age))
 
-l1 <- lmer(correct ~ age_group * expt + (1 | SID) + (1 | variable),
-             data=subset(md, trial.type=="inference"))
-l2 <- lmer(correct ~ age_group + expt + (1 | SID) + (1 | variable),
-             data=subset(md, trial.type=="inference"))
+l1 <- glmer(correct ~ age_group * expt + (1 | SID) + (1 | variable),
+             data=subset(md, trial.type=="inference"), family="binomial")
+l2 <- glmer(correct ~ age_group + expt + (1 | SID) + (1 | variable),
+             data=subset(md, trial.type=="inference"), family="binomial")
 anova(l2,l1)
+summary(l2)
