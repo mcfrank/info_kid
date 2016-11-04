@@ -39,13 +39,42 @@ ms <- ddply(mss, .(trial.type,expt,age_group),
             correct = mean(correct))
 
 #quartz()
-qplot(age_group, correct, fill = trial.type,
-      stat="identity",
-      position=position_dodge(.9),
-      ymin=correct-cil, ymax=correct+cih,
-      data=ms, facets = .~expt, geom=c("bar","linerange"),
-      xlab="Age Group (Years)",ylab="Proportion Inference Consistent") + 
+ggplot(ms, aes(x = age_group, y = correct, fill = trial.type)) + 
+  geom_bar(stat="identity", position=position_dodge(.9)) + 
+  geom_linerange(aes(ymin=correct-cil, ymax=correct+cih), 
+                 position=position_dodge(.9)) + 
+  facet_wrap(~expt) +
+  xlab("Age Group (Years)") + 
+  ylab("Proportion Inference Consistent") + 
   geom_hline(yintercept=.5, lty=2) 
+
+ggplot(ms, aes(x = age_group, y = correct, col = trial.type)) + 
+  geom_pointrange(aes(ymin=correct-cil, ymax=correct+cih), 
+                 position=position_dodge(.9)) + 
+  facet_wrap(~expt) +
+  xlab("Age Group (Years)") + 
+  ylab("Proportion Inference Consistent") + 
+  geom_hline(yintercept=.5, lty=2) 
+
+ggplot(mss, aes(x = age_group, y = correct, col = trial.type)) + 
+  geom_jitter(alpha = .2, position = position_jitterdodge(jitter.width = .2, 
+                                              jitter.height = .03, 
+                                              dodge.width = .9)) + 
+  facet_wrap(~expt) +
+  xlab("Age Group (Years)") + 
+  ylab("Proportion Inference Consistent") + 
+  geom_hline(yintercept=.5, lty=2)+
+  geom_pointrange(data = ms, aes(ymin=correct-cil, ymax=correct+cih), 
+                  position=position_dodge(.9)) 
+
+ggplot(mss, aes(x = age_group, y = correct, col = trial.type)) + 
+  geom_boxplot() + 
+  facet_wrap(~expt) +
+  xlab("Age Group (Years)") + 
+  ylab("Proportion Inference Consistent") + 
+  geom_hline(yintercept=.5, lty=2) 
+
+
 
 # l2 <- lmer(correct ~ age.group + type  + (type|subid) + (1 |item),
 #            data=d1,family="binomial")
